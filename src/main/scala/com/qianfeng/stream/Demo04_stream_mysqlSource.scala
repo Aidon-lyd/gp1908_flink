@@ -5,8 +5,11 @@ import java.sql.{Connection, DriverManager, PreparedStatement, ResultSet, SQLExc
 import com.qianfeng.common.Stu
 import org.apache.flink.api.scala._
 import org.apache.flink.configuration.Configuration
+import org.apache.flink.runtime.entrypoint.StandaloneSessionClusterEntrypoint
+import org.apache.flink.runtime.taskexecutor.TaskManagerRunner
 import org.apache.flink.streaming.api.functions.source.{RichSourceFunction, SourceFunction}
 import org.apache.flink.streaming.api.scala.{DataStream, StreamExecutionEnvironment}
+import org.apache.flink.yarn.cli.FlinkYarnSessionCli
 
 
 /**
