@@ -5,12 +5,8 @@ import java.sql.{Connection, DriverManager, PreparedStatement, ResultSet, SQLExc
 import com.qianfeng.common.Stu
 import org.apache.flink.api.scala._
 import org.apache.flink.configuration.Configuration
-import org.apache.flink.runtime.entrypoint.StandaloneSessionClusterEntrypoint
-import org.apache.flink.runtime.taskexecutor.TaskManagerRunner
-import org.apache.flink.streaming.api.functions.source.{RichSourceFunction, SourceFunction}
+import org.apache.flink.streaming.api.functions.source.{RichParallelSourceFunction, RichSourceFunction, SourceFunction}
 import org.apache.flink.streaming.api.scala.{DataStream, StreamExecutionEnvironment}
-import org.apache.flink.yarn.cli.FlinkYarnSessionCli
-
 
 /**
  * 读取mysql的数据
@@ -21,7 +17,8 @@ object Demo04_stream_mysqlSource {
     val env: StreamExecutionEnvironment = StreamExecutionEnvironment.getExecutionEnvironment
 
     //添加源
-    val dstream: DataStream[Stu] = env.addSource(new MyMysqlSource)
+    //val dstream: DataStream[Stu] = env.addSource(new MyMysqlSource) //不能设置并行度.setParallelism(2)
+    val dstream: DataStream[Stu] = env.addSource(new MyMysqlSourceParalle).setParallelism(2)
     //打印
     dstream.print("my MyMysqlSource-")
 
@@ -91,3 +88,59 @@ class MyMysqlSource() extends RichSourceFunction[Stu]{
     }
   }
 }
+
+//该方式可以自定义并行度
+class MyMysqlSourceParalle() extends RichParallelSourceFunction[Stu]{
+  //连接数据库的对象
+  var conn:Connection = _
+  var ps:PreparedStatement = _
+  var rs:ResultSet = _
+
+  //用于初始化
+  override def open(parameters: Configuration): Unit = {
+    val driver = "com.mysql.jdbc.Driver"
+    val url = "jdbc:mysql://hadoop01:3306/test"
+    val user = "root"
+    val pass = "root"
+    //反射
+    try {
+      Class.forName(driver)
+      conn = DriverManager.getConnection(url, user, pass)
+      //查询
+      ps = conn.prepareStatement("select * from stu1")
+    } catch {
+      case e:SQLException => e.printStackTrace()
+    }
+  }
+
+  //往下游打数据
+  override def run(ctx: SourceFunction.SourceContext[Stu]): Unit = {
+    //获取rs中的数据
+    try {
+      rs = ps.executeQuery()
+      while (rs.next()) {
+        val stu: Stu = new Stu(rs.getInt(1), rs.getString(2).trim)
+        //输出
+        ctx.collect(stu)
+      }
+    } catch {
+      case e:SQLException => e.printStackTrace()
+    }
+  }
+
+  override def cancel(): Unit = {}
+
+  //最后关闭资源
+  override def close(): Unit = {
+    if(rs != null){
+      rs.close()
+    }
+    if(ps != null){
+      ps.close()
+    }
+    if(conn != null){
+      conn.close()
+    }
+  }
+}
+

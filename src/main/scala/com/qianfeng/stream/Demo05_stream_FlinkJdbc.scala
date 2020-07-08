@@ -2,8 +2,11 @@ package com.qianfeng.stream
 
 import org.apache.flink.api.common.typeinfo.{BasicTypeInfo, TypeInformation}
 import org.apache.flink.api.java.io.jdbc.JDBCInputFormat
+import org.apache.flink.api.java.operators.DataSource
 import org.apache.flink.api.java.typeutils.RowTypeInfo
 import org.apache.flink.api.scala._
+import org.apache.flink.streaming.api.datastream.DataStreamSource
+import org.apache.flink.streaming.api.functions.source.RichSourceFunction
 import org.apache.flink.streaming.api.scala.{DataStream, StreamExecutionEnvironment}
 import org.apache.flink.types.Row
 
