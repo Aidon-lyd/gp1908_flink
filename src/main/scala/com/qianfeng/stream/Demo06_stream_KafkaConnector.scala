@@ -4,7 +4,7 @@ import java.util.Properties
 
 import org.apache.flink.api.common.serialization.SimpleStringSchema
 import org.apache.flink.streaming.api.scala.StreamExecutionEnvironment
-import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer09
+//import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer09
 //import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer
 import org.apache.flink.streaming.api.scala._
 
@@ -27,7 +27,7 @@ object Demo06_stream_KafkaConnector {
     //1.0及以后的kafka的通用依赖
     //val res: DataStream[String] = env.addSource(new FlinkKafkaConsumer(from_topic, new SimpleStringSchema(), pro))
 
-    //0.9的kafka的代码
+    /*//0.9的kafka的代码
     val flinkKafkaConsumer: FlinkKafkaConsumer09[String] = new FlinkKafkaConsumer09(from_topic, new SimpleStringSchema(), pro)
     //设置消费相关信息
     flinkKafkaConsumer.setStartFromLatest()  //从最新的位置消费
@@ -37,7 +37,7 @@ object Demo06_stream_KafkaConnector {
 
 
     //持久化
-    res.print("flink-kafka-")
+    res.print("flink-kafka-")*/
 
     //触发执行
     env.execute("kafka connector-")

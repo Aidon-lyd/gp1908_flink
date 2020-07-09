@@ -1,11 +1,7 @@
 package com.qianfeng.stream
 
-import java.util.Properties
-
 import com.qianfeng.common.WordCount
-import org.apache.flink.api.common.serialization.SimpleStringSchema
 import org.apache.flink.streaming.api.scala.StreamExecutionEnvironment
-import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer09
 //import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer
 import org.apache.flink.streaming.api.scala._
 
