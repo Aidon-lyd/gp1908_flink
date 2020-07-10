@@ -1,28 +1,11 @@
 package com.qianfeng.stream
 
-import java.util
-import java.util.Properties
-
-import com.qianfeng.common.{YQ, YQDetail, YQSchema}
-import org.apache.flink.api.common.functions.RuntimeContext
-import org.apache.flink.api.common.serialization.SimpleStringEncoder
+import com.qianfeng.common.YQDetail
 import org.apache.flink.core.fs.Path
 import org.apache.flink.formats.parquet.avro.ParquetAvroWriters
 import org.apache.flink.streaming.api.functions.sink.filesystem.StreamingFileSink
-import org.apache.flink.streaming.api.functions.sink.filesystem.bucketassigners.{BasePathBucketAssigner, DateTimeBucketAssigner}
-import org.apache.flink.streaming.api.functions.sink.filesystem.rollingpolicies.DefaultRollingPolicy
+import org.apache.flink.streaming.api.functions.sink.filesystem.bucketassigners.BasePathBucketAssigner
 import org.apache.flink.streaming.api.scala.{StreamExecutionEnvironment, _}
-import org.apache.flink.streaming.connectors.elasticsearch.{ElasticsearchSinkFunction, RequestIndexer}
-import org.apache.flink.streaming.connectors.elasticsearch6.ElasticsearchSink
-import org.apache.flink.streaming.connectors.kafka.FlinkKafkaProducer
-import org.apache.flink.streaming.connectors.kafka.FlinkKafkaProducer.Semantic
-import org.apache.flink.streaming.connectors.redis.RedisSink
-import org.apache.flink.streaming.connectors.redis.common.config.FlinkJedisPoolConfig
-import org.apache.flink.streaming.connectors.redis.common.mapper.{RedisCommand, RedisCommandDescription, RedisMapper}
-import org.apache.flink.yarn.cli.FlinkYarnSessionCli
-import org.apache.http.HttpHost
-import org.elasticsearch.action.index.IndexRequest
-import org.elasticsearch.client.Requests
 
 
 /**
@@ -79,6 +62,7 @@ object Demo19_stream_FileSink {
         val fileds: Array[String] = x.split(" ")
         YQDetail(fileds(0), fileds(1), fileds(2).toInt, fileds(3).toInt)
       })
+      res.print("============")
 
       //将其添加到sink中
       val outputPath: Path = new Path("hdfs://hadoop01:9000/out/flink/yq/dt=2020-07-10")
