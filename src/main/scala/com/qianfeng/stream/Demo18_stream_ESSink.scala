@@ -13,6 +13,7 @@ import org.apache.flink.streaming.connectors.kafka.FlinkKafkaProducer.Semantic
 import org.apache.flink.streaming.connectors.redis.RedisSink
 import org.apache.flink.streaming.connectors.redis.common.config.FlinkJedisPoolConfig
 import org.apache.flink.streaming.connectors.redis.common.mapper.{RedisCommand, RedisCommandDescription, RedisMapper}
+import org.apache.flink.yarn.cli.FlinkYarnSessionCli
 import org.apache.http.HttpHost
 import org.elasticsearch.action.index.IndexRequest
 import org.elasticsearch.client.Requests
@@ -64,6 +65,8 @@ object Demo18_stream_ESSink {
     //设置批次操作的缓存条数(文档数量) --- 如果需要实时，就需要设置成1
     esBuilder.setBulkFlushMaxActions(1)
     val esSink: ElasticsearchSink[YQ] = esBuilder.build()
+    //添加sink
+    res.addSink(esSink)
     //触发执行
     env.execute("es sink connector---")
   }
