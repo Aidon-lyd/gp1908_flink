@@ -1,7 +1,9 @@
 package com.qianfeng.stream
 
 import org.apache.flink.api.scala._
+import org.apache.flink.streaming.api.graph.StreamingJobGraphGenerator
 import org.apache.flink.streaming.api.scala.{DataStream, StreamExecutionEnvironment}
+import org.apache.flink.streaming.runtime.partitioner.StreamPartitioner
 
 /**
  * 控制操作链
