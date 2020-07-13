@@ -130,6 +130,14 @@
             <version>1.9.1</version>
         </dependency>
 
+        <!--flink-rocksdb的依赖 -->
+        <dependency>
+            <groupId>org.apache.flink</groupId>
+            <artifactId>flink-statebackend-rocksdb_2.11</artifactId>
+            <version>1.9.1</version>
+            <scope>test</scope>
+        </dependency>
+
     </dependencies>
 
 
