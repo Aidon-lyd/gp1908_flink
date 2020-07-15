@@ -2,6 +2,7 @@ package com.qianfeng.stream
 
 import java.text.SimpleDateFormat
 
+import org.apache.flink.api.common.ExecutionConfig
 import org.apache.flink.api.java.tuple.Tuple
 import org.apache.flink.api.scala._
 import org.apache.flink.streaming.api.TimeCharacteristic
@@ -14,13 +15,15 @@ import org.apache.flink.streaming.api.windowing.windows.TimeWindow
 import org.apache.flink.util.Collector
 
 /**
- * flink的水印
+ * 多并行度下的水印：使用所有并行中的较小值来作为水印
  */
-object Demo34_stream_WaterMark {
+object Demo37_stream_MultiWartermark {
   def main(args: Array[String]): Unit = {
     //1、获取流式执行环境   --- scala包
     val env: StreamExecutionEnvironment = StreamExecutionEnvironment.getExecutionEnvironment
-    env.setParallelism(1) //如果想看触发效果，，需要设置1个并行度
+    env.setParallelism(2)
+    val config: ExecutionConfig = env.getConfig
+    config.setAutoWatermarkInterval(1000)
     //附件时间 --- 事件时间类型
     env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime)
 
@@ -31,7 +34,7 @@ object Demo34_stream_WaterMark {
           val fileds: Array[String] = x.split(" ")
           (fileds(0).trim,fileds(1).toLong)
         })
-        .assignTimestampsAndWatermarks(new MyWatermarkAssinger)
+        .assignTimestampsAndWatermarks(new MyWatermarkAssinger1)
         .keyBy(0)
         .timeWindow(Time.seconds(3))
       //.apply()  为咯查看窗口和水印及触发相关信息
@@ -63,7 +66,7 @@ object Demo34_stream_WaterMark {
 AssignerWithPeriodicWatermarks[(String,Long)] : 周期性水印分配  --- 常用
 AssignerWithPunctuatedWatermarks : 基于事件的水印分配
  */
-class MyWatermarkAssinger extends AssignerWithPeriodicWatermarks[(String,Long)]{
+class MyWatermarkAssinger1 extends AssignerWithPeriodicWatermarks[(String,Long)]{
 
   var maxTimestamp = 0L //迄今为止最大时间戳
   val lateness = 1000*10 //允许最大延迟数据的时间 10s
@@ -82,7 +85,9 @@ class MyWatermarkAssinger extends AssignerWithPeriodicWatermarks[(String,Long)]{
     maxTimestamp = Math.max(now_time,maxTimestamp) //用当前数据时间和最大时间戳计算最大时间错
     //方便测试打印观看---
     val now_watermark: Long = getCurrentWatermark.getTimestamp
-    println(s"Event时间->${now_time} | ${fmt.format(now_time)}, " +
+    //添加线程ID
+    val threadId: Long = Thread.currentThread().getId
+    println(s"当前线程ID->${threadId} , Event时间->${now_time} | ${fmt.format(now_time)}, " +
       s"本窗口迄今为止最大的时间->${maxTimestamp} | ${fmt.format(maxTimestamp)}," +
       s"当前watermark->${now_watermark} | ${fmt.format(now_watermark)}")
     //返回时间
