@@ -8,6 +8,7 @@ import org.apache.flink.streaming.api.scala.function.ProcessWindowFunction
 import org.apache.flink.streaming.api.windowing.time.Time
 import org.apache.flink.streaming.api.windowing.windows.TimeWindow
 import org.apache.flink.util.Collector
+import org.apache.lucene.index.TwoPhaseCommit
 
 /**
  * window的reduce聚合
