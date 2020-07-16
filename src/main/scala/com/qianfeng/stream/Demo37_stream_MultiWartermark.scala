@@ -7,6 +7,7 @@ import org.apache.flink.api.java.tuple.Tuple
 import org.apache.flink.api.scala._
 import org.apache.flink.streaming.api.TimeCharacteristic
 import org.apache.flink.streaming.api.functions.AssignerWithPeriodicWatermarks
+import org.apache.flink.streaming.api.functions.timestamps.BoundedOutOfOrdernessTimestampExtractor
 import org.apache.flink.streaming.api.scala.StreamExecutionEnvironment
 import org.apache.flink.streaming.api.scala.function.RichWindowFunction
 import org.apache.flink.streaming.api.watermark.Watermark
@@ -34,7 +35,7 @@ object Demo37_stream_MultiWartermark {
           val fileds: Array[String] = x.split(" ")
           (fileds(0).trim,fileds(1).toLong)
         })
-        .assignTimestampsAndWatermarks(new MyWatermarkAssinger1)
+        .assignTimestampsAndWatermarks(new MyWatermarkAssinger)
         .keyBy(0)
         .timeWindow(Time.seconds(3))
       //.apply()  为咯查看窗口和水印及触发相关信息
