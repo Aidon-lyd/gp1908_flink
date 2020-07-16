@@ -8,6 +8,7 @@ import org.apache.flink.streaming.api.scala.{DataStream, StreamExecutionEnvironm
 import org.apache.flink.streaming.api.windowing.time.Time
 import org.apache.flink.table.api.Table
 import org.apache.flink.table.api.scala.StreamTableEnvironment
+import org.apache.flink.table.sources.TableSource
 import org.apache.flink.types.Row
 
 
@@ -30,7 +31,8 @@ object Demo08_sql_WC {
 
     import org.apache.flink.table.api.scala._
     val table: Table = tenv.fromDataStream[WordCount1](ds)
-
+    tenv.registerDataStream("t1",ds)
+    //tenv.registerTableSource("t1", )
     //sql操作
     tenv.sqlQuery(
       s"""
