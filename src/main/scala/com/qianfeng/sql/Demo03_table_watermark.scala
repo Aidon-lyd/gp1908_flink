@@ -50,7 +50,6 @@ object Demo03_table_watermark {
     //.rowtime是Eventtime   .processtime：是系统处理时间
     val table: Table = tenv.fromDataStream(ds,'dt,'timestamp.rowtime)
 
-
     //基于表的操作
     //Tumble over 2.second --- 滚动窗口，大小为2
     //on 'timestamp --- 窗口基于事件时间

@@ -5,6 +5,7 @@ import org.apache.flink.api.scala._
 import org.apache.flink.cep.scala.{CEP, PatternStream}
 import org.apache.flink.cep.scala.pattern.Pattern
 import org.apache.flink.streaming.api.scala.{DataStream, StreamExecutionEnvironment}
+import org.apache.flink.streaming.api.windowing.time.Time
 import org.apache.flink.util.Collector
 
 /**
@@ -33,12 +34,41 @@ object Demo38_stream_CEP {
     )
 
     //模式定义 --- pattern 导scala包中，，注意引入依赖
+   /* //非确定性宽松近邻
     val pattern: Pattern[Event, Event] = Pattern.begin[Event]("start")
       .where(_.getName.equals("start"))
       .followedByAny("middle")
       .where(_.getName.equals("middle"))
       .followedByAny("end")
+      .where(_.getName.equals("end"))*/
+
+    //严格近邻和宽松近邻
+    /*val pattern: Pattern[Event, Event] = Pattern.begin[Event]("start")
+      .where(_.getName.equals("start"))
+      .next("middle")
+      .where(_.getName.equals("middle"))
+      .followedBy("end")
+      .where(_.getName.equals("end"))*/
+
+    /*val pattern: Pattern[Event, Event] = Pattern.begin[Event]("start")
+      .where(_.getName.equals("start"))
+      .followedByAny("middle")
+      .where(_.getName.equals("middle"))
+      //.times(4)   //middle出现两次
+      .times(2)
+      .followedByAny("end")
       .where(_.getName.equals("end"))
+      .within(Time.seconds(10))  //相当于指定窗口，，如果在10类匹配不上，就刽匹配
+    */
+
+    val pattern: Pattern[Event, Event] = Pattern.begin[Event]("start")
+      .where(_.getName.equals("start"))
+      .followedByAny("middle")
+      //.where(_.getName.equals("middle"))
+      .where(_.getPrice>=5.0)  //2个where连接到一起就是and
+      .followedByAny("end")
+      .where(_.getName.equals("end"))
+      .within(Time.seconds(10))
 
     //模式检测
     val ps: PatternStream[Event] = CEP.pattern(ds, pattern)
